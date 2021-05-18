@@ -2,7 +2,7 @@
 
 **!! THIS IS NOT AN OFFICIAL BITWARDEN PRODUCT !!**
 
-I created this for my own benefit. Feel free to look through the code and use it yourself.
+I created this for myself. Feel free to look through the code and use it.
 
 I will not publish this on the Chrome extension store.
 
