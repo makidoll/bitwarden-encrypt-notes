@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 
-const iterations = 100001;
+const iterations = 100000;
 // const iterations = 10000;
 
 const SALT_OFFSET = 8;

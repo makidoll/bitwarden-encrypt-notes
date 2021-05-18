@@ -32,11 +32,11 @@ prefix  salt    ciphertext
 # Decrypt manually with OpenSSL on Linux
 
 ```bash
-echo "cipher text" | openssl base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -iter 100001
+echo "cipher text" | openssl base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000
 ```
 
 And if you're curious how to encrypt:
 
 ```bash
-echo -n "plain text" | openssl enc -e -a -aes-256-cbc -pbkdf2 -iter 100001
+echo -n "plain text" | openssl enc -e -a -aes-256-cbc -pbkdf2 -iter 100000
 ```
