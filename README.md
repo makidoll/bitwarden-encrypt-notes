@@ -32,7 +32,7 @@ prefix  salt    ciphertext
 # Decrypt manually with OpenSSL on Linux
 
 ```bash
-echo "cipher text" | openssl base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000
+echo "cipher text" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000
 ```
 
 And if you're curious how to encrypt:
