@@ -6,7 +6,10 @@ I created this for myself. Feel free to look through the code and use it.
 
 I will not publish this on the Chrome extension store.
 
-[![Bitwarden: Encrypt Notes](https://img.youtube.com/vi/4Yj0vew88YY/0.jpg)](https://www.youtube.com/watch?v=4Yj0vew88YY "Bitwarden: Encrypt Notes")
+<a href="https://www.youtube.com/watch?v=4Yj0vew88YY">
+Watch this video on how it works:
+<img height="200" src="https://img.youtube.com/vi/4Yj0vew88YY/0.jpg"/>
+</a>
 
 # Build
 
