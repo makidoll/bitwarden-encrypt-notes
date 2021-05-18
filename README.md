@@ -8,6 +8,7 @@ I will not publish this on the Chrome extension store.
 
 <a href="https://www.youtube.com/watch?v=4Yj0vew88YY">
 Watch this video on how it works:
+<br />
 <img height="200" src="https://img.youtube.com/vi/4Yj0vew88YY/0.jpg"/>
 </a>
 
