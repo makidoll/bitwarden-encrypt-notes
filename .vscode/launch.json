@@ -1,0 +1,12 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Chrome",
+			"type": "chrome",
+			"request": "launch",
+			"runtimeArgs": ["--load-extension=${workspaceFolder}"],
+			"runtimeExecutable": "C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"
+		}
+	]
+}
