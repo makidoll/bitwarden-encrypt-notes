@@ -5,6 +5,7 @@
 		"build": "parcel build --no-source-maps src/main.ts"
 	},
 	"dependencies": {
+		"@types/node": "^15.3.0",
 		"crypto-js": "^4.0.0",
 		"notie": "^4.3.1"
 	},
