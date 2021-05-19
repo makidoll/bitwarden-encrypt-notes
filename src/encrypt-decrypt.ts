@@ -1,4 +1,6 @@
-import CryptoJS from "crypto-js";
+import * as CryptoJS from "crypto-js";
+
+var manifest = require('../manifest.json');
 
 const iterations = 100000;
 // const iterations = 10000;
@@ -35,10 +37,15 @@ function sliceWords(
 // https://crypto.stackexchange.com/a/79855
 
 export function isEncrypted(message: string) {
-	const prefix = CryptoJS.enc.Utf8.parse("Salted__")
-		.toString(CryptoJS.enc.Base64)
-		.slice(0, -2);
-	return message.startsWith(prefix);
+	try {
+		const cipherText = JSON.parse(message).cipherText;
+		const prefix = CryptoJS.enc.Utf8.parse("Salted__")
+			.toString(CryptoJS.enc.Base64)
+			.slice(0, -2);
+		return cipherText.startsWith(prefix);
+	} catch {
+		return false;
+	};
 }
 
 export async function encrypt(messageString: string, password: string) {
@@ -64,23 +71,33 @@ export async function encrypt(messageString: string, password: string) {
 		...encrypted.ciphertext.words,
 	]).toString(CryptoJS.enc.Base64);
 
+	const encryptedObject = {
+		"tool": manifest.homepage_url,
+		"version": manifest.version,
+		"algo": "pbkdf2",
+		"iterations": iterations,
+		"cipherText": encryptedString
+	}
+
 	// console.log("salt:", salt.toString());
 	// console.log("key:", key.toString());
 	// console.log("iv:", iv.toString());
 	// console.log("encrypted:", encryptedString);
 
-	return encryptedString;
+	return JSON.stringify(encryptedObject);
 }
 
 export async function decrypt(messageString: string, password: string) {
 	// get salt and ciphertext from message
-	const message = CryptoJS.enc.Base64.parse(messageString);
+	const cipherObject = JSON.parse(messageString);
+	const cipherTextRaw = cipherObject.cipherText;
+	const message = CryptoJS.enc.Base64.parse(cipherTextRaw);
 	const salt = sliceWords(message, SALT_OFFSET, SALT_LENGTH);
 	const ciphertext = sliceWords(message, CIPHERTEXT_OFFSET);
 
 	// get key and iv from password and salt
 	const keyIv = CryptoJS.PBKDF2(password, salt, {
-		iterations,
+		iterations: cipherObject.iterations,
 		hasher: CryptoJS.algo.SHA256,
 		keySize: KEYIV_LENGTH / 4, // words
 	});
