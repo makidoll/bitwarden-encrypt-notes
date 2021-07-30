@@ -1,9 +1,4 @@
-import * as CryptoJS from "crypto-js";
-
-var manifest = require('../manifest.json');
-
-const iterations = 100000;
-// const iterations = 10000;
+import CryptoJS from "crypto-js";
 
 const SALT_OFFSET = 8;
 const SALT_LENGTH = 8;
@@ -37,18 +32,17 @@ function sliceWords(
 // https://crypto.stackexchange.com/a/79855
 
 export function isEncrypted(message: string) {
-	try {
-		const cipherText = JSON.parse(message).cipherText;
-		const prefix = CryptoJS.enc.Utf8.parse("Salted__")
-			.toString(CryptoJS.enc.Base64)
-			.slice(0, -2);
-		return cipherText.startsWith(prefix);
-	} catch {
-		return false;
-	};
+	const prefix = CryptoJS.enc.Utf8.parse("Salted__")
+		.toString(CryptoJS.enc.Base64)
+		.slice(0, -2);
+	return message.startsWith(prefix);
 }
 
-export async function encrypt(messageString: string, password: string) {
+export async function encrypt(
+	messageString: string,
+	password: string,
+	iterations: number,
+) {
 	// create salt and generate key and iv with password
 	const salt = CryptoJS.lib.WordArray.random(SALT_LENGTH);
 	const keyIv = CryptoJS.PBKDF2(password, salt, {
@@ -71,33 +65,27 @@ export async function encrypt(messageString: string, password: string) {
 		...encrypted.ciphertext.words,
 	]).toString(CryptoJS.enc.Base64);
 
-	const encryptedObject = {
-		"tool": manifest.homepage_url,
-		"version": manifest.version,
-		"algo": "pbkdf2",
-		"iterations": iterations,
-		"cipherText": encryptedString
-	}
-
 	// console.log("salt:", salt.toString());
 	// console.log("key:", key.toString());
 	// console.log("iv:", iv.toString());
 	// console.log("encrypted:", encryptedString);
 
-	return JSON.stringify(encryptedObject);
+	return encryptedString;
 }
 
-export async function decrypt(messageString: string, password: string) {
+export async function decrypt(
+	messageString: string,
+	password: string,
+	iterations: number,
+) {
 	// get salt and ciphertext from message
-	const cipherObject = JSON.parse(messageString);
-	const cipherTextRaw = cipherObject.cipherText;
-	const message = CryptoJS.enc.Base64.parse(cipherTextRaw);
+	const message = CryptoJS.enc.Base64.parse(messageString);
 	const salt = sliceWords(message, SALT_OFFSET, SALT_LENGTH);
 	const ciphertext = sliceWords(message, CIPHERTEXT_OFFSET);
 
 	// get key and iv from password and salt
 	const keyIv = CryptoJS.PBKDF2(password, salt, {
-		iterations: cipherObject.iterations,
+		iterations,
 		hasher: CryptoJS.algo.SHA256,
 		keySize: KEYIV_LENGTH / 4, // words
 	});
