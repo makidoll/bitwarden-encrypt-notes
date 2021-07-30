@@ -109,6 +109,5 @@ async function toggleNotesEncryption() {
 chrome.runtime.onMessage.addListener((msg, sender) => {
 	if (sender.id != chrome.runtime.id) return;
 	if (msg.action != "click") return;
-	console.log(msg);
 	toggleNotesEncryption();
 });
