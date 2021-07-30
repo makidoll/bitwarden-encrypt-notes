@@ -28,6 +28,15 @@ const inputPassword = (encrypted: boolean, reenter = false) =>
 	});
 
 const getPassword = async (encrypted: boolean) => {
+	// remove tabindex to allow user input
+	const tabIndexEl = document.querySelector<HTMLElement>('*[tabindex="-1"]');
+	if (tabIndexEl != null) tabIndexEl.removeAttribute("tabindex");
+
+	const reset = () => {
+		// add tabindex to restore back
+		if (tabIndexEl != null) tabIndexEl.setAttribute("tabindex", "-1");
+	};
+
 	const password = await inputPassword(encrypted);
 	if (password == "") return "";
 
@@ -40,9 +49,11 @@ const getPassword = async (encrypted: boolean) => {
 			type: "error",
 			text: "Passwords don't match",
 		});
+		reset();
 		return "";
 	}
 
+	reset();
 	return password;
 };
 
@@ -59,13 +70,8 @@ async function toggleNotesEncryption() {
 
 	let value = textarea.value;
 
-	const tabIndexEl = document.querySelector<HTMLElement>('*[tabindex="-1"]');
-	if (tabIndexEl != null) tabIndexEl.removeAttribute("tabindex");
-
 	const encrypted = isEncrypted(textarea.value);
 	const password = await getPassword(encrypted);
-
-	if (tabIndexEl != null) tabIndexEl.setAttribute("tabindex", "-1");
 
 	if (password == "") return;
 
