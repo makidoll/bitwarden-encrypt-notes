@@ -57,6 +57,12 @@ const getPassword = async (encrypted: boolean) => {
 	return password;
 };
 
+interface EncryptedNote {
+	cipher: "aes-256-cbc"; // currently the only supported
+	iterations: number;
+	cipherText: string;
+}
+
 async function toggleNotesEncryption() {
 	const textarea = document.querySelector<HTMLTextAreaElement>(
 		"textarea[name=Notes]",
@@ -68,25 +74,79 @@ async function toggleNotesEncryption() {
 		});
 	}
 
-	let value = textarea.value;
+	const rawValue = textarea.value.trim();
+	if (rawValue == "") {
+		return notie.alert({
+			type: "error",
+			text: "Note can't be empty",
+		});
+	}
 
-	const encrypted = isEncrypted(textarea.value);
+	let jsonValue: EncryptedNote = null;
+	try {
+		jsonValue = JSON.parse(rawValue);
+	} catch (error) {}
+
+	if (jsonValue == null) {
+		// either old encrypted note or plain text
+
+		if (isEncrypted(rawValue)) {
+			// we dont know the iterations, so lets stick to pre-json iterations
+			jsonValue = {
+				cipher: "aes-256-cbc",
+				iterations: 100000,
+				cipherText: rawValue,
+			};
+		} else {
+			// raw value stays raw value!
+		}
+	} else {
+		// validate json
+		if (typeof jsonValue.iterations != "number") {
+			return notie.alert({
+				type: "error",
+				text: "Invalid iterations",
+			});
+		}
+		if (typeof jsonValue.cipherText != "string") {
+			return notie.alert({
+				type: "error",
+				text: "Invalid cipher text",
+			});
+		}
+	}
+
+	const encrypted = jsonValue != null;
+
 	const password = await getPassword(encrypted);
 
 	if (password == "") return;
 
 	try {
+		let newValue: string = "";
+
 		if (encrypted) {
-			value = await decrypt(value, password);
+			newValue = await decrypt(
+				jsonValue.cipherText,
+				password,
+				jsonValue.iterations,
+			);
+			newValue = newValue.trim();
+			if (newValue == "") throw new Error("Failed to decrypt");
 		} else {
-			value = await encrypt(value, password);
+			// TODO: allow users to change this value
+			const iterations = 100000;
+
+			const encryptedNote: EncryptedNote = {
+				cipher: "aes-256-cbc",
+				iterations,
+				cipherText: await encrypt(rawValue, password, iterations),
+			};
+
+			newValue = JSON.stringify(encryptedNote);
 		}
 
-		value = value.trim();
-		if (value == "")
-			throw new Error("Failed to " + (encrypted ? "decrypt" : "encrypt"));
-
-		textarea.value = value;
+		textarea.value = newValue;
 		textarea.dispatchEvent(new Event("input", { bubbles: true }));
 	} catch (error) {
 		return notie.alert({
