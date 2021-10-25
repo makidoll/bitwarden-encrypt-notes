@@ -14,6 +14,7 @@
 		"persistent": false
 	},
 	"page_action": {
+		"show_matches": ["*://vault.bitwarden.com/*"],
 		"default_icon": {
 			"16": "icons/icon-16.png",
 			"48": "icons/icon-48.png",
@@ -29,5 +30,10 @@
 			"css": ["dist/notie.min.css"]
 		}
 	],
-	"permissions": ["declarativeContent"]
+	"permissions": ["declarativeContent"],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "bitwarden-encrypt-notes@maki.cafe"
+		}
+	}
 }

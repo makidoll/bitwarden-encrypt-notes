@@ -7,6 +7,13 @@
 			"request": "launch",
 			"runtimeArgs": ["--load-extension=${workspaceFolder}"],
 			"runtimeExecutable": "C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"
+		},
+		{
+			"name": "Launch Firefox",
+			"type": "firefox",
+			"request": "launch",
+			"reAttach": true,
+			"addonPath": "${workspaceFolder}"
 		}
 	]
 }

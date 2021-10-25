@@ -1,0 +1,1 @@
+zip -r -FS ./bitwarden-encrypt-notes.zip dist/ icons/ manifest.json background.js
