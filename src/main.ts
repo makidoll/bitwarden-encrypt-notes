@@ -4,8 +4,8 @@ import notie from "notie";
 
 const notieStyles = document.createElement("style");
 notieStyles.innerHTML = [
-	"  .notie-overlay{z-index:99999999}",
-	".notie-container{z-index:999999999999}",
+	"  .notie-overlay{z-index:99999999 !important}",
+	".notie-container{z-index:999999999999 !important}",
 ].join(" ");
 document.body.appendChild(notieStyles);
 
