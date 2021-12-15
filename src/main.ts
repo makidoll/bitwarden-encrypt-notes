@@ -1,31 +1,8 @@
 import { decrypt, encrypt, isEncrypted } from "./encrypt-decrypt";
+import { UiNative } from "./user-interface";
 
-import notie from "notie";
-
-const notieStyles = document.createElement("style");
-notieStyles.innerHTML = [
-	"  .notie-overlay{z-index:99999999 !important}",
-	".notie-container{z-index:999999999999 !important}",
-].join(" ");
-document.body.appendChild(notieStyles);
-
-const inputPassword = (encrypted: boolean, reenter = false) =>
-	new Promise<string>(resolve => {
-		notie.input(
-			{
-				text: (reenter ? "Re-e" : "E") + "nter your notes password",
-				submitText: encrypted ? "Decrypt" : "Encrypt",
-				placeholder: "Your password",
-				type: "password",
-			},
-			(text: string) => {
-				resolve(text.trim());
-			},
-			() => {
-				resolve("");
-			},
-		);
-	});
+// const ui = new UiNotie();
+const ui = new UiNative();
 
 const getPassword = async (encrypted: boolean) => {
 	// remove tabindex to allow user input
@@ -37,15 +14,15 @@ const getPassword = async (encrypted: boolean) => {
 		if (tabIndexEl != null) tabIndexEl.setAttribute("tabindex", "-1");
 	};
 
-	const password = await inputPassword(encrypted);
+	const password = await ui.inputPassword(encrypted);
 	if (password == "") return "";
 
 	const confirmPassword = encrypted
 		? password
-		: await inputPassword(encrypted, true);
+		: await ui.inputPassword(encrypted, true);
 
 	if (password != confirmPassword) {
-		notie.alert({
+		ui.alert({
 			type: "error",
 			text: "Passwords don't match",
 		});
@@ -68,7 +45,7 @@ async function toggleNotesEncryption() {
 		"textarea[name=Notes]",
 	);
 	if (textarea == null) {
-		return notie.alert({
+		return ui.alert({
 			type: "info",
 			text: "Please open or create an item with notes",
 		});
@@ -76,7 +53,7 @@ async function toggleNotesEncryption() {
 
 	const rawValue = textarea.value.trim();
 	if (rawValue == "") {
-		return notie.alert({
+		return ui.alert({
 			type: "error",
 			text: "Note can't be empty",
 		});
@@ -103,13 +80,13 @@ async function toggleNotesEncryption() {
 	} else {
 		// validate json
 		if (typeof jsonValue.iterations != "number") {
-			return notie.alert({
+			return ui.alert({
 				type: "error",
 				text: "Invalid iterations",
 			});
 		}
 		if (typeof jsonValue.cipherText != "string") {
-			return notie.alert({
+			return ui.alert({
 				type: "error",
 				text: "Invalid cipher text",
 			});
@@ -149,7 +126,7 @@ async function toggleNotesEncryption() {
 		textarea.value = newValue;
 		textarea.dispatchEvent(new Event("input", { bubbles: true }));
 	} catch (error) {
-		return notie.alert({
+		return ui.alert({
 			type: "error",
 			text: error,
 		});
